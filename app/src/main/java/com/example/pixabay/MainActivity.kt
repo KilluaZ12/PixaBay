@@ -3,6 +3,7 @@ package com.example.pixabay
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.example.pixabay.databinding.ActivityMainBinding
 import retrofit2.Call
 import retrofit2.Response
@@ -28,11 +29,18 @@ class MainActivity : AppCompatActivity() {
                 isAddToList = false
                 getImage()
             }
-            changeBtn.setOnClickListener {
-                isAddToList = true
-                ++page
-                getImage()
-            }
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+                override fun onScrollStateChanged(
+                    recyclerView: RecyclerView,
+                    newState: Int
+                ) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (!recyclerView.canScrollVertically(1)) {
+                        ++page
+                        getImage()
+                    }
+                }
+            })
         }
     }
 
@@ -47,9 +55,10 @@ class MainActivity : AppCompatActivity() {
                         recyclerView.adapter = adapter
 
                         if (!isAddToList) {
-                            adapter.list.clear()
+                            adapter.list
                         }
                         adapter.list.addAll(response.body()?.hits!!)
+
                     }
                 }
 
